@@ -1,0 +1,31 @@
+<html>
+  <body>
+    <p>Upload an image to ColorArt:</p>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <input type="file" name="image">
+      <input type="submit" value="Upload">
+    </form>
+    {{if .}}
+    <table>
+      <tr>
+	<td >Color</td>
+	<td>Web Name</td>
+	<td>Frequency</td>
+	<td>{r, g, b, a}</td>
+      </tr>
+      {{range .}}
+      <tr>
+	<td style="width:24px; background-color:{{.Hex}};"></td>
+	<td>{{.Name}}</td>
+	<td>{{.Frequency}}</td>
+	<td>{{.Color}}</td>
+      </tr>
+      {{end}}
+    </table>
+    {{end}}
+<p/>
+<tt>sevki.org</tt>
+<p/>
+<img src="http://static.sevkiapp.com/gopher.gif"/>
+  </body>
+</html>
