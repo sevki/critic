@@ -5,7 +5,12 @@
       <input type="file" name="image">
       <input type="submit" value="Upload">
     </form>
-    {{if .}}
+    {{if .image}}
+    <center>
+      <img src="{{.image}}" />
+    </center>
+    {{end}}
+    {{if .colors}}
     <table>
       <tr>
 	<td >Color</td>
@@ -13,7 +18,7 @@
 	<td>Frequency</td>
 	<td>{r, g, b, a}</td>
       </tr>
-      {{range .}}
+      {{range .colors}}
       <tr>
 	<td style="width:24px; background-color:{{.Hex}};"></td>
 	<td>{{.Name}}</td>
@@ -24,7 +29,7 @@
     </table>
     {{end}}
 <p/>
-<tt>sevki.org</tt>
+<tt><a href="sevki.org">sevki.org</a></tt>
 <p/>
 <img src="http://static.sevkiapp.com/gopher.gif"/>
   </body>

@@ -1,10 +1,15 @@
 package critic
 
 import (
+	"bytes"
+	"encoding/base64"
+	"fmt"
 	"image"
+	"image/color"
+	"image/color/palette"
 	_ "image/gif"
 	_ "image/jpeg"
-	_ "image/png"
+	"image/png"
 	"io/ioutil"
 	"net/http"
 	"text/template"
@@ -30,7 +35,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 func validsize(i image.Image) bool {
 	b := i.Bounds()
-	if b.Dx() < 1024 && b.Dy() < 768 {
+	if b.Dx()*b.Dy() < 10424*768 {
 		return true
 	} else {
 		return false
@@ -56,17 +61,31 @@ func upload(w http.ResponseWriter, req *http.Request) {
 		w.Write([]byte("that image is too big"))
 		return
 	}
+	var plt color.Palette
+	plt = palette.Plan9
 
-	colors := Analyze(i, X11)
+	colors, img := AnalyzeAndConvert(i, plt)
 
-	bytes, err := ioutil.ReadFile("static/root.tmpl")
+	bytz, err := ioutil.ReadFile("static/root.tmpl")
 	if err != nil {
 		w.Write([]byte("template not happy"))
 		return
 	}
 
 	tmpl := template.New("")
-	tmpl.Parse(string(bytes))
-	tmpl.Execute(w, colors)
+	tmpl.Parse(string(bytz))
+	vars := make(map[string]interface{})
+
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		panic(err)
+	}
+
+	vars["colors"] = colors
+	vars["image"] = fmt.Sprintf(
+		"data:image/png;base64,%s",
+		base64.StdEncoding.EncodeToString(buf.Bytes()),
+	)
+	tmpl.Execute(w, vars)
 
 }
